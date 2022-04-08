@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
         Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
         //Each member within the shard sends a different multicast
         if(rank_in_foo == 0) {
-            int new_value = 1;
+            uint64_t new_value = 1;
             cout << "Changing Foo's state to " << new_value << endl;
             derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
             decltype(results)::ReplyMap& replies = results.get();
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
             cout << "Reading Foo's state just to allow node 1's message to be delivered" << endl;
             foo_rpc_handle.ordered_send<RPC_NAME(read_state)>();
         } else if(rank_in_foo == 1) {
-            int new_value = 3;
+            uint64_t new_value = 3;
             cout << "Changing Foo's state to " << new_value << endl;
             derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
             decltype(results)::ReplyMap& replies = results.get();
@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
         } else if(rank_in_foo == 2) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
             cout << "Reading Foo's state from the group" << endl;
-            derecho::rpc::QueryResults<int> foo_results = foo_rpc_handle.ordered_send<RPC_NAME(read_state)>();
+            derecho::rpc::QueryResults<uint64_t> foo_results = foo_rpc_handle.ordered_send<RPC_NAME(read_state)>();
             for(auto& reply_pair : foo_results.get()) {
                 cout << "Node " << reply_pair.first << " says the state is: " << reply_pair.second.get() << endl;
             }
