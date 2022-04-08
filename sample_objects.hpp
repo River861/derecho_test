@@ -53,33 +53,33 @@ struct Foo : public mutils::ByteRepresentable {
     REGISTER_RPC_FUNCTIONS(Foo, P2P_TARGETS(read_state), ORDERED_TARGETS(read_state, change_state))
 };
 
-// /**
-//  * Another example replicated object, where the serializable state is not a POD.
-//  */
-// class Bar : public mutils::ByteRepresentable {
-//     std::string log;
+/**
+ * Another example replicated object, where the serializable state is not a POD.
+ */
+class Bar : public mutils::ByteRepresentable {
+    std::string log;
 
-// public:
-//     void append(const std::string& words) {
-//         log += words;
-//     }
-//     void clear() {
-//         log.clear();
-//     }
-//     std::string print() const {
-//         return log;
-//     }
+public:
+    void append(const std::string& words) {
+        log += words;
+    }
+    void clear() {
+        log.clear();
+    }
+    std::string print() const {
+        return log;
+    }
 
-//     /**
-//      * Constructs a Bar with an initial value for its string state.
-//      * Required by serialization support.
-//      * @param s The initial state string to store in this Bar object.
-//      */
-//     Bar(const std::string& s = "") : log(s) {}
+    /**
+     * Constructs a Bar with an initial value for its string state.
+     * Required by serialization support.
+     * @param s The initial state string to store in this Bar object.
+     */
+    Bar(const std::string& s = "") : log(s) {}
 
-//     DEFAULT_SERIALIZATION_SUPPORT(Bar, log);
-//     REGISTER_RPC_FUNCTIONS(Bar, ORDERED_TARGETS(append, clear, print));
-// };
+    DEFAULT_SERIALIZATION_SUPPORT(Bar, log);
+    REGISTER_RPC_FUNCTIONS(Bar, ORDERED_TARGETS(append, clear, print));
+};
 
 // /**
 //  * An example replicated object formatted like a key-value cache, where both

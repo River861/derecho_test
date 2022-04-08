@@ -25,14 +25,19 @@ using derecho::Replicated;
 using std::cout;
 using std::endl;
 
+const int shard_size = 3;  // 也就是replica factor
+const uint64_t num_messages = 100000;  // 发送消息的数目
+
+
 int main(int argc, char** argv) {
+    // 1. 创建Group
     // Read configurations from the command line options as well as the default config file
     derecho::Conf::initialize(argc, argv);
 
     //Define subgroup membership using the default subgroup allocator function
     //Each Replicated type will have one subgroup and one shard, with three members in the shard
     derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
-        {std::type_index(typeid(Foo)), derecho::one_subgroup_policy(derecho::fixed_even_shards(1,3))},
+        {std::type_index(typeid(Foo)), derecho::one_subgroup_policy(derecho::fixed_even_shards(1, shard_size))},  // TODO node数量可能要大于replica数量，可能需要改shared数目
         // {std::type_index(typeid(Bar)), derecho::one_subgroup_policy(derecho::fixed_even_shards(1,3))}
     })};
     //Each replicated type needs a factory; this can be used to supply constructor arguments
@@ -41,13 +46,65 @@ int main(int argc, char** argv) {
     auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
     // auto bar_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Bar>(); };
 
-    derecho::Group<Foo> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
+    // 1.1 创建callback函数，用于终止testing
+    // variable 'done' tracks the end of the test
+    volatile bool done = false;
+    // callback into the application code at each message delivery
+    auto stability_callback = [&done,
+                               num_messages,
+                               num_delivered = 0u](uint32_t subgroup,
+                                                   uint32_t sender_id,
+                                                   long long int index,
+                                                   std::optional<std::pair<uint8_t*, long long int>> data,
+                                                   persistent::version_t ver) mutable {
+        // Count the total number of messages delivered
+        ++num_delivered;
+        // Check for completion
+        if(num_delivered == num_messages) {
+            done = true;
+        }
+    };
+
+    derecho::Group<Foo> group(derecho::UserMessageCallbacks{stability_callback}, subgroup_function, {},
                                           std::vector<derecho::view_upcall_t>{},
                                           foo_factory);
 
     cout << "Finished constructing/joining Group" << endl;
 
+    // 2. 创建发送消息的执行函数
     uint32_t my_id = derecho::getConfUInt32(CONF_DERECHO_LOCAL_ID);
+    // this function sends all the messages
+    auto send_all = [&]() {
+        Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
+        for(uint i = 0; i < num_messages; ++i) {
+            // the lambda function writes the message contents into the provided memory buffer
+            // in this case, we do not touch the memory region
+            uint64_t new_value = my_id * num_messages + i;  // 每次发送不同的值
+            foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
+        }
+    };
+
+    // 3. throughput测试逻辑
+    // start timer
+    auto start_time = std::chrono::steady_clock::now();
+    // send all messages or skip if not a sender
+    if(senders_mode == PartialSendMode::ALL_SENDERS) {
+        send_all();
+    } else if(senders_mode == PartialSendMode::HALF_SENDERS) {
+        if(node_rank > (num_nodes - 1) / 2) {
+            send_all();
+        }
+    } else {
+        if(node_rank == num_nodes - 1) {
+            send_all();
+        }
+    }
+    // wait for the test to finish
+    while(!done) {
+    }
+    // end timer
+    auto end_time = std::chrono::steady_clock::now();
+
     //Now have each node send some updates to the Replicated objects.
     //The code must be different depending on which subgroup this node is in,
     //which we can determine by attempting to locate its shard in each subgroup.
@@ -88,39 +145,39 @@ int main(int argc, char** argv) {
                 cout << "Node " << reply_pair.first << " says the state is: " << reply_pair.second.get() << endl;
             }
         }
-    // } else if(my_bar_shard != -1) {
-    //     std::vector<node_id_t> bar_members = group.get_subgroup_members<Bar>()[my_bar_shard];
-    //     uint32_t rank_in_bar = derecho::index_of(bar_members, my_id);
-    //     Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
-    //     if(rank_in_bar == 0) {
-    //         cout << "Appending to Bar." << endl;
-    //         derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>("Write from 0...");
-    //         derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
-    //         cout << "Append delivered to nodes: ";
-    //         for(const node_id_t& node : sent_nodes) {
-    //             cout << node << " ";
-    //         }
-    //         cout << endl;
-    //     } else if(rank_in_bar == 1) {
-    //         cout << "Appending to Bar" << endl;
-    //         bar_rpc_handle.ordered_send<RPC_NAME(append)>("Write from 1...");
-    //         //Send to node rank 2 in shard 0 of the Foo subgroup
-    //         node_id_t p2p_target = group.get_subgroup_members<Foo>()[0][2];
-    //         cout << "Reading Foo's state from node " << p2p_target << endl;
-    //         ExternalCaller<Foo>& p2p_foo_handle = group.get_nonmember_subgroup<Foo>();
-    //         derecho::rpc::QueryResults<int> foo_results = p2p_foo_handle.p2p_send<RPC_NAME(read_state)>(p2p_target);
-    //         int response = foo_results.get().get(p2p_target);
-    //         cout << "  Response: " << response << endl;
-    //     } else if(rank_in_bar == 2) {
-    //         bar_rpc_handle.ordered_send<RPC_NAME(append)>("Write from 2...");
-    //         cout << "Printing log from Bar" << endl;
-    //         derecho::rpc::QueryResults<std::string> bar_results = bar_rpc_handle.ordered_send<RPC_NAME(print)>();
-    //         for(auto& reply_pair : bar_results.get()) {
-    //             cout << "Node " << reply_pair.first << " says the log is: " << reply_pair.second.get() << endl;
-    //         }
-    //         cout << "Clearing Bar's log" << endl;
-    //         derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(clear)>();
-    //     }
+    } else if(my_bar_shard != -1) {
+        std::vector<node_id_t> bar_members = group.get_subgroup_members<Bar>()[my_bar_shard];
+        uint32_t rank_in_bar = derecho::index_of(bar_members, my_id);
+        Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
+        if(rank_in_bar == 0) {
+            cout << "Appending to Bar." << endl;
+            derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>("Write from 0...");
+            derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
+            cout << "Append delivered to nodes: ";
+            for(const node_id_t& node : sent_nodes) {
+                cout << node << " ";
+            }
+            cout << endl;
+        } else if(rank_in_bar == 1) {
+            cout << "Appending to Bar" << endl;
+            bar_rpc_handle.ordered_send<RPC_NAME(append)>("Write from 1...");
+            //Send to node rank 2 in shard 0 of the Foo subgroup
+            node_id_t p2p_target = group.get_subgroup_members<Foo>()[0][2];
+            cout << "Reading Foo's state from node " << p2p_target << endl;
+            ExternalCaller<Foo>& p2p_foo_handle = group.get_nonmember_subgroup<Foo>();
+            derecho::rpc::QueryResults<int> foo_results = p2p_foo_handle.p2p_send<RPC_NAME(read_state)>(p2p_target);
+            int response = foo_results.get().get(p2p_target);
+            cout << "  Response: " << response << endl;
+        } else if(rank_in_bar == 2) {
+            bar_rpc_handle.ordered_send<RPC_NAME(append)>("Write from 2...");
+            cout << "Printing log from Bar" << endl;
+            derecho::rpc::QueryResults<std::string> bar_results = bar_rpc_handle.ordered_send<RPC_NAME(print)>();
+            for(auto& reply_pair : bar_results.get()) {
+                cout << "Node " << reply_pair.first << " says the log is: " << reply_pair.second.get() << endl;
+            }
+            cout << "Clearing Bar's log" << endl;
+            derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(clear)>();
+        }
     } else {
         std::cout << "This node was not assigned to any subgroup!" << std::endl;
     }
