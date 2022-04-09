@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
     // log the result at the leader node
     if(node_rank == 0) {
-        check_consistency();
+        // check_consistency();
         cout << "total throughput: " << total_bw << endl;
     }
     group.barrier_sync();
