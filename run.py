@@ -31,7 +31,7 @@ if __name__ == '__main__':
     rdmc_port = conf.getint("DERECHO", "rdmc_port")
     external_port = conf.getint("DERECHO", "external_port")
 
-    r = random.randint(0, 10)
+    r = 0 # random.randint(0, 10)
 
     cmd_process = {
         i : CmdProcess("./main "
