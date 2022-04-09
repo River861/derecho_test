@@ -91,7 +91,10 @@ int main(int argc, char** argv) {
             // in this case, we do not touch the memory region
             // uint64_t new_value = node_rank * num_messages + i;  // 每次发送不同的值
             // derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-            derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>("[Write from "+std::to_string(node_rank)+"]");
+
+            std::string new_value = std::to_string(node_rank);
+            new_value += std::string(1024 - new_value.size(), 'x');
+            derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>(new_value);
         }
     };
 
