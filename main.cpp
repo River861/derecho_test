@@ -31,7 +31,7 @@ using std::endl;
 
 const int num_clients = 24;  // clients数目
 const int shard_size = 24;  // 也就是replica factor
-const uint64_t num_messages = 3;  // 发送消息的数目
+const uint64_t num_messages = 10;  // 发送消息的数目
 
 
 int main(int argc, char** argv) {
@@ -118,7 +118,6 @@ int main(int argc, char** argv) {
 
     // 3. throughput测试逻辑
     // start timer
-    cout << "FUCK1" << endl;
     auto start_time = std::chrono::steady_clock::now();
     // send all messages or skip if not a sender
     send_all();
@@ -129,7 +128,6 @@ int main(int argc, char** argv) {
     auto end_time = std::chrono::steady_clock::now();
 
     // 4. 计算throughput
-    cout << "FUCK2" << endl;
     long long int nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();  // 以纳秒级计算
     // calculate bandwidth measured locally
     double bw = (total_num_messages + 0.0) / nanoseconds_elapsed * 1e9;
@@ -140,9 +138,6 @@ int main(int argc, char** argv) {
         check_consistency();
         cout << "total throughput: " << total_bw << endl;
     }
-    cout << "FUCK2" << endl;
     group.barrier_sync();
-    cout << "FUCK3" << endl;
     group.leave();
-    cout << "FUCK4" << endl;
 }
