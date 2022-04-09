@@ -1,6 +1,7 @@
 from threading import Thread
 import os
 import configparser
+import random
 
 
 class CmdProcess(Thread):
@@ -25,19 +26,21 @@ if __name__ == '__main__':
     conf.read("derecho.cfg")
     local_id = conf.getint("DERECHO", "local_id")
     gms_port =  conf.getint("DERECHO", "gms_port")
-    state_transfer_port = conf.getint("DERECHO", "state_transfer_port")
+    state_transfer_port = conf.getint("DERECHO", "state_transfesr_port")
     sst_port = conf.getint("DERECHO", "sst_port")
     rdmc_port = conf.getint("DERECHO", "rdmc_port")
     external_port = conf.getint("DERECHO", "external_port")
 
+    r = random.randint(0, 10)
+
     cmd_process = {
         i : CmdProcess("./main "
                      f"  --DERECHO/local_id={local_id*8+i}"
-                     f"  --DERECHO/gms_port={gms_port+i}"
-                     f"  --DERECHO/state_transfer_port={state_transfer_port+i}"
-                     f"  --DERECHO/sst_port={sst_port+i}"
-                     f"  --DERECHO/rdmc_port={rdmc_port+i}"
-                     f"  --DERECHO/external_port={external_port+i}")
+                     f"  --DERECHO/gms_port={gms_port+i+r}"
+                     f"  --DERECHO/state_transfer_port={state_transfer_port+i+r}"
+                     f"  --DERECHO/sst_port={sst_port+i+r}"
+                     f"  --DERECHO/rdmc_port={rdmc_port+i+r}"
+                     f"  --DERECHO/external_port={external_port+i+r}")
         for i in range(8)
     }
     for p in cmd_process.values():  # 并发执行
