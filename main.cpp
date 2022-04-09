@@ -31,7 +31,7 @@ using std::endl;
 
 const int num_clients = 24;  // clients数目
 const int shard_size = 24;  // 也就是replica factor
-const uint64_t num_messages = 100;  // 发送消息的数目
+const uint64_t num_messages = 10;  // 发送消息的数目
 
 
 int main(int argc, char** argv) {
@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
             // derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
 
             std::string new_value = std::to_string(node_rank);
-            // new_value += std::string(1024 - new_value.size(), 'x');
+            new_value += std::string(1024 - new_value.size(), 'x');
             derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>(new_value);
         }
     };
@@ -107,16 +107,16 @@ int main(int argc, char** argv) {
         // }
 
         Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
-        derecho::rpc::QueryResults<std::string> bar_results = bar_rpc_handle.ordered_send<RPC_NAME(print)>();
-        std::vector<std::string> res;
-        for(auto& reply_pair : bar_results.get()) {
-            res.push_back(reply_pair.second.get());
-        }
+        // derecho::rpc::QueryResults<std::string> bar_results = bar_rpc_handle.ordered_send<RPC_NAME(print)>();
+        // std::vector<std::string> res;
+        // for(auto& reply_pair : bar_results.get()) {
+        //     res.push_back(reply_pair.second.get());
+        // }
         derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(clear)>();
 
-        for(int i = 0; i < res.size() - 1; ++ i) {
-            assert(res[i] == res[i + 1]);
-        }
+        // for(int i = 0; i < res.size() - 1; ++ i) {
+        //     assert(res[i] == res[i + 1]);
+        // }
     };
 
     // 3. throughput测试逻辑
@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
     // log the result at the leader node
     if(node_rank == 0) {
-        // check_consistency();
+        check_consistency();
         cout << "total throughput: " << total_bw << endl;
     }
     group.barrier_sync();

@@ -1,7 +1,6 @@
 from threading import Thread
 import os
 import configparser
-import random
 
 
 class CmdProcess(Thread):
