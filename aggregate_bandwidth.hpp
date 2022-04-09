@@ -12,18 +12,18 @@ public:
     }
 };
 
-class TwoResultSST : public sst::SST<TwoResultSST> {
-public:
-    sst::SSTField<double> bw1;
-    sst::SSTField<double> bw2;
-    TwoResultSST(const sst::SSTParams& params)
-            : SST<TwoResultSST>(this, params) {
-        SSTInit(bw1, bw2);
-    }
-};
+// class TwoResultSST : public sst::SST<TwoResultSST> {
+// public:
+//     sst::SSTField<double> bw1;
+//     sst::SSTField<double> bw2;
+//     TwoResultSST(const sst::SSTParams& params)
+//             : SST<TwoResultSST>(this, params) {
+//         SSTInit(bw1, bw2);
+//     }
+// };
 
 double aggregate_bandwidth(std::vector<uint32_t> members, uint32_t node_rank,
                            double bw);
 
-std::pair<double, double> aggregate_bandwidth(std::vector<uint32_t> members, uint32_t node_rank,
-                                              std::pair<double, double> bw);
+// std::pair<double, double> aggregate_bandwidth(std::vector<uint32_t> members, uint32_t node_rank,
+//                                               std::pair<double, double> bw);
