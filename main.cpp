@@ -142,10 +142,28 @@ void derecho_test(int argc, char** argv) {
 }
 
 
-int main(int argc, char** argv) {
+int main() {
     std::thread threads[8];
 
+    int argc = 8;
+    char **argv = (char**)malloc(sizeof(char*) * 8);
+    for (int j = 0; j < 8; ++ j) {
+        argv[j] = (char*)malloc(sizeof(char) * 50);
+    }
     for (int i = 0; i < 8; ++ i) {
+        std::vector<std::string> tmp = {
+            "./main",
+            "--DERECHO/local_id=" + std::to_string(derecho::getConfUInt32(CONF_DERECHO_LOCAL_ID)*8+i),
+            "--DERECHO/gms_port=" + std::to_string(derecho::getConfUInt32(CONF_DERECHO_GMS_PORT)+i),
+            "--DERECHO/state_transfer_port=" + std::to_string(derecho::getConfUInt32(CONF_DERECHO_STATE_TRANSFER_PORT)+i),
+            "--DERECHO/sst_port=" + std::to_string(derecho::getConfUInt32(CONF_DERECHO_SST_PORT)+i),
+            "--DERECHO/rdmc_port" + std::to_string(derecho::getConfUInt32(CONF_DERECHO_RDMC_PORT)+i),
+            "--DERECHO/external_port" + std::to_string(derecho::getConfUInt32(CONF_DERECHO_EXTERNAL_PORT)+i)
+        };
+        if(i) tmp.push_back("--DERECHO/local_ip=127.0.0.1");
+        for (int j = 0; j < tmp.size(); ++ j) {
+            strcpy(argv[j], tmp[j].c_str());
+        }
         threads[i] = std::thread(derecho_test, argc, argv);
     }
 
