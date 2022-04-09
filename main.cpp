@@ -31,7 +31,7 @@ using std::endl;
 
 const int num_clients = 24;  // clients数目
 const int shard_size = 24;  // 也就是replica factor
-const uint64_t num_messages = 10;  // 发送消息的数目
+const uint64_t num_messages = 3;  // 发送消息的数目
 
 
 int main(int argc, char** argv) {
