@@ -29,7 +29,7 @@ using std::endl;
 
 const int num_nodes = 3;  // 结点数目
 const int shard_size = 3;  // 也就是replica factor
-const uint64_t num_messages = 10;  // 发送消息的数目
+const uint64_t num_messages = 100;  // 发送消息的数目
 
 
 int main(int argc, char** argv) {
@@ -109,9 +109,9 @@ int main(int argc, char** argv) {
     // 4. 计算throughput
     auto members_order = group.get_members();
     uint32_t node_rank = group.get_my_rank();
-    long long int nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
+    long long int seconds_elapsed = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time).count();  // 以秒级计算
     // calculate bandwidth measured locally
-    double bw = (total_num_messages + 0.0) / nanoseconds_elapsed;
+    double bw = (total_num_messages + 0.0) / seconds_elapsed;
     // aggregate bandwidth from all nodes
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
     // log the result at the leader node
