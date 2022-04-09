@@ -26,7 +26,7 @@ if __name__ == '__main__':
     conf.read("derecho.cfg")
     local_id = conf.getint("DERECHO", "local_id")
     gms_port =  conf.getint("DERECHO", "gms_port")
-    state_transfer_port = conf.getint("DERECHO", "state_transfesr_port")
+    state_transfer_port = conf.getint("DERECHO", "state_transfer_port")
     sst_port = conf.getint("DERECHO", "sst_port")
     rdmc_port = conf.getint("DERECHO", "rdmc_port")
     external_port = conf.getint("DERECHO", "external_port")
