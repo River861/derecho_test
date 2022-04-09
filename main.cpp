@@ -30,7 +30,7 @@ using std::endl;
 
 const int num_nodes = 3;  // 结点数目
 const int shard_size = 3;  // 也就是replica factor
-const uint64_t num_messages = 100;  // 发送消息的数目
+const uint64_t num_messages = 10000;  // 发送消息的数目
 
 
 int main(int argc, char** argv) {
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 
     cout << "Finished constructing/joining Group" << endl;
 
-    // 2. 创建发送消息的执行函数
+    // 2. 创建发送消息的执行函数、验证一致性的验证函数
     uint32_t my_id = derecho::getConfUInt32(CONF_DERECHO_LOCAL_ID);
     // this function sends all the messages
     auto send_all = [&]() {
@@ -85,14 +85,14 @@ int main(int argc, char** argv) {
             // the lambda function writes the message contents into the provided memory buffer
             // in this case, we do not touch the memory region
             // uint64_t new_value = my_id * num_messages + i;  // 每次发送不同的值
-            cout << "Appending to Bar." << endl;
+            // cout << "Appending to Bar." << endl;
             derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>("[Write from "+std::to_string(my_id)+"]");
-            derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
-            cout << "Append delivered to nodes: ";
-            for(const node_id_t& node : sent_nodes) {
-                cout << node << " ";
-            }
-            cout << endl;
+            // derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
+            // cout << "Append delivered to nodes: ";
+            // for(const node_id_t& node : sent_nodes) {
+            //     cout << node << " ";
+            // }
+            // cout << endl;
         }
     };
 
@@ -100,10 +100,13 @@ int main(int argc, char** argv) {
         Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
         cout << "Printing log from Bar" << endl;
         derecho::rpc::QueryResults<std::string> bar_results = bar_rpc_handle.ordered_send<RPC_NAME(print)>();
-        auto primary = (bar_results.get().begin()->second).get();
+        std::vector<std::string> res;
         for(auto& reply_pair : bar_results.get()) {
-            assert(primary == reply_pair.second.get());
+            res.push_back(reply_pair.second.get());
             // cout << "Node " << reply_pair.first << " says the log is: " << reply_pair.second.get() << endl;
+        }
+        for(int i = 0; i < res.size() - 1; ++ i) {
+            assert(res[i] == res[i + 1]);
         }
         cout << "Clearing Bar's log" << endl;
         derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(clear)>();
