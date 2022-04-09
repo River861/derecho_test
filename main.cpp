@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cassert>
 
 #include <derecho/conf/conf.hpp>
 #include <derecho/core/derecho.hpp>
@@ -99,8 +100,10 @@ int main(int argc, char** argv) {
         Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
         cout << "Printing log from Bar" << endl;
         derecho::rpc::QueryResults<std::string> bar_results = bar_rpc_handle.ordered_send<RPC_NAME(print)>();
+        auto primary = (bar_results.get().begin()->second).get();
         for(auto& reply_pair : bar_results.get()) {
-            cout << "Node " << reply_pair.first << " says the log is: " << reply_pair.second.get() << endl;
+            assert(primary == reply_pair.second.get());
+            // cout << "Node " << reply_pair.first << " says the log is: " << reply_pair.second.get() << endl;
         }
         cout << "Clearing Bar's log" << endl;
         derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(clear)>();
