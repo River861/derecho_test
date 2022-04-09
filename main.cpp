@@ -95,6 +95,17 @@ int main(int argc, char** argv) {
         }
     };
 
+    auto print_all = [&]()  {
+        Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
+        cout << "Printing log from Bar" << endl;
+        derecho::rpc::QueryResults<std::string> bar_results = bar_rpc_handle.ordered_send<RPC_NAME(print)>();
+        for(auto& reply_pair : bar_results.get()) {
+            cout << "Node " << reply_pair.first << " says the log is: " << reply_pair.second.get() << endl;
+        }
+        cout << "Clearing Bar's log" << endl;
+        derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(clear)>();
+    };
+
     // 3. throughput测试逻辑
     // start timer
     auto start_time = std::chrono::steady_clock::now();
@@ -116,6 +127,7 @@ int main(int argc, char** argv) {
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
     // log the result at the leader node
     if(node_rank == 0) {
+        print_all();
         cout << "total throughput: " << total_bw << endl;
     }
     group.barrier_sync();
