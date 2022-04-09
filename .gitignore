@@ -1,4 +1,4 @@
 *.log
-./derecho.cfg
 .vscode/
 main
+derecho.cfg

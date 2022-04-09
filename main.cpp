@@ -29,9 +29,9 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 16;  // clients数目
-const int shard_size = 16;  // 也就是replica factor
-const uint64_t num_messages = 10;  // 发送消息的数目
+const int num_clients = 24;  // clients数目
+const int shard_size = 24;  // 也就是replica factor
+const uint64_t num_messages = 1000;  // 发送消息的数目
 
 
 int main(int argc, char** argv) {
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
         // Count the total number of messages delivered
         ++num_delivered;
         // Check for completion
-        cout << "num_delivered: " << num_delivered << endl;
+        // cout << "num_delivered: " << num_delivered << endl;
         if(num_delivered == total_num_messages) {
             done = true;
         }
