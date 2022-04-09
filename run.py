@@ -31,16 +31,16 @@ if __name__ == '__main__':
     rdmc_port = conf.getint("DERECHO", "rdmc_port")
     external_port = conf.getint("DERECHO", "external_port")
 
-    r = 0 # random.randint(0, 10)
+    r = random.randint(0, 20)
 
     cmd_process = {
         i : CmdProcess("./main "
                      f"  --DERECHO/local_id={local_id*8+i}"
-                     f"  --DERECHO/gms_port={gms_port+i+r}"
-                     f"  --DERECHO/state_transfer_port={state_transfer_port+i+r}"
+                     f"  --DERECHO/gms_port={gms_port+i}"
+                     f"  --DERECHO/state_transfer_port={state_transfer_port+i}"
                      f"  --DERECHO/sst_port={sst_port+i+r}"
-                     f"  --DERECHO/rdmc_port={rdmc_port+i+r}"
-                     f"  --DERECHO/external_port={external_port+i+r}")
+                     f"  --DERECHO/rdmc_port={rdmc_port+i}"
+                     f"  --DERECHO/external_port={external_port+i}")
         for i in range(8)
     }
     for p in cmd_process.values():  # 并发执行
