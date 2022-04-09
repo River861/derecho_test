@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
             // derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
 
             std::string new_value = std::to_string(node_rank);
-            new_value += std::string(1024 - new_value.size(), 'x');
+            // new_value += std::string(1024 - new_value.size(), 'x');
             derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>(new_value);
         }
     };
