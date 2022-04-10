@@ -121,6 +121,7 @@ int main(int argc, char** argv) {
 
     // 3. throughput测试逻辑
     // start timer
+    group.barrier_sync();
     auto start_time = std::chrono::steady_clock::now();
     // send all messages or skip if not a sender
     send_all();
