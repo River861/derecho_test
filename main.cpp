@@ -33,7 +33,7 @@ using std::endl;
 
 const int num_clients = 8;        // clients数目
 const int shard_size = 8;         // 也就是replica factor
-const uint64_t num_messages = 1000;  // 发送消息的数目
+const double test_time = 10.0;      // 测试时间
 const int msg_size = 1024;
 
 
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
     uint32_t node_rank = group.get_my_rank();
 
     // 2. 发送消息的函数
-    auto send_one = [&](int i) {
+    auto send_one = [&]() {
         // Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
         Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
         // the lambda function writes the message contents into the provided memory buffer
@@ -100,13 +100,12 @@ int main(int argc, char** argv) {
     // 3. throughput测试逻辑
     group.barrier_sync();
     auto start_time = std::chrono::steady_clock::now();
-    uint64_t cnt = 0;
+    uint64_t cnt = 0, nanoseconds_elapsed;
     do {
-        send_one(cnt);
+        send_one();
         cnt ++;
-        cout << "cnt: " << cnt << endl;
-    } while(cnt < num_messages);
-    uint64_t nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
+        nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
+    } while(nanoseconds_elapsed < test_time * 1e9);
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
