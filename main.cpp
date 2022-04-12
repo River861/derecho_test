@@ -139,6 +139,7 @@ int main(int argc, char** argv) {
     do {
         send_one();
         cnt += shard_size;
+        cout << "num_delivered: " << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     } while(nanoseconds_elapsed < 10 * 1e9);
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
