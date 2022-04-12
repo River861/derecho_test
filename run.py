@@ -33,11 +33,11 @@ if __name__ == '__main__':
     cmd_process = {
         i : CmdProcess(f"taskset -c {i*2} ./main "
                        f"  --DERECHO/local_id={local_id*8+i}"
-                       f"  --DERECHO/gms_port={gms_port+i*1}"
-                       f"  --DERECHO/state_transfer_port={state_transfer_port+i*1}"
-                       f"  --DERECHO/sst_port={sst_port+i*1}"
-                       f"  --DERECHO/rdmc_port={rdmc_port+i*1}"
-                       f"  --DERECHO/external_port={external_port+i*1}")
+                       f"  --DERECHO/gms_port={gms_port+i*50}"
+                       f"  --DERECHO/state_transfer_port={state_transfer_port+i*50}"
+                       f"  --DERECHO/sst_port={sst_port+i*50}"
+                       f"  --DERECHO/rdmc_port={rdmc_port+i*50}"
+                       f"  --DERECHO/external_port={external_port+i*50}")
         for i in range(8)
     }
     for p in cmd_process.values():  # 并发执行
