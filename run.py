@@ -32,12 +32,12 @@ if __name__ == '__main__':
 
     cmd_process = {
         i : CmdProcess("./main "
-                     f"  --DERECHO/local_id={local_id*8+i}"
-                     f"  --DERECHO/gms_port={gms_port+i}"
-                     f"  --DERECHO/state_transfer_port={state_transfer_port+i}"
-                     f"  --DERECHO/sst_port={sst_port+i}"
-                     f"  --DERECHO/rdmc_port={rdmc_port+i}"
-                     f"  --DERECHO/external_port={external_port+i}")
+                     f"  --DERECHO/local_id={local_id*8+i}")
+                    #  f"  --DERECHO/gms_port={gms_port+i}"
+                    #  f"  --DERECHO/state_transfer_port={state_transfer_port+i}"
+                    #  f"  --DERECHO/sst_port={sst_port+i}"
+                    #  f"  --DERECHO/rdmc_port={rdmc_port+i}"
+                    #  f"  --DERECHO/external_port={external_port+i}")
         for i in range(8)
     }
     for p in cmd_process.values():  # 并发执行
