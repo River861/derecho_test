@@ -99,8 +99,8 @@ int main(int argc, char** argv) {
     // };
 
     auto send_one = [&]() {
-        // Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
-        Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
+        Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
+        // Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
         // the lambda function writes the message contents into the provided memory buffer
         // in this case, we do not touch the memory region
         uint64_t new_value = node_rank * num_messages + i;  // 每次发送不同的值
