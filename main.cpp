@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     //     }
     // };
 
-    derecho::Group<Bar> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
+    derecho::Group<Foo> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
                                           std::vector<derecho::view_upcall_t>{},
                                           foo_factory);
 
