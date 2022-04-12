@@ -31,10 +31,10 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 8;           // clients数目
-const int shard_size = 8;            // 也就是replica factor
-const double test_seconds = 10.0;      // 测试时间
-const int msg_size = 1024;             // msg大小
+const int num_clients = 128;        // clients数目
+const int shard_size = 128;         // 也就是replica factor
+const uint64_t num_messages = 1000;  // 发送消息的数目
+const int msg_size = 1024;
 
 
 int main(int argc, char** argv) {
@@ -100,14 +100,14 @@ int main(int argc, char** argv) {
     // 3. throughput测试逻辑
     group.barrier_sync();
     auto start_time = std::chrono::steady_clock::now();
-    uint64_t cnt = 0, nanoseconds_elapsed;
+    uint64_t cnt = 0;
     do {
         send_one(cnt);
         cnt ++;
-        nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
-        cout << "seconds: " << (nanoseconds_elapsed + 0.0) / 1e9 << endl;
-    } while(nanoseconds_elapsed < test_seconds * 1e9);
-    double bw = (cnt + 0.0) / nanoseconds_elapsed * 1e9;
+        cout << "cnt: " << cnt << endl;
+    } while(cnt < num_messages);
+    uint64_t nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
+    double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
     // log the result at the leader node
