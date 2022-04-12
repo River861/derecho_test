@@ -11,6 +11,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <map>
 #include <memory>
@@ -166,7 +167,7 @@ int main(int argc, char** argv) {
     if(node_rank == 0) {
         check_consistency();
         ofstream f;
-        f.open("result.txt",ios::in); 
+        f.open("result.txt");
         f << "total throughput: " << fixed << total_bw << endl;
         f.close();
     }
