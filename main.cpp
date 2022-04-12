@@ -166,10 +166,10 @@ int main(int argc, char** argv) {
     // log the result at the leader node
     if(node_rank == 0) {
         check_consistency();
-        ofstream f;
-        f.open("result.txt");
-        f << "total throughput: " << fixed << total_bw << endl;
-        f.close();
+        std::ofstream file;
+        file.open("result.txt");
+        file << "total throughput: " << std::fixed << total_bw << std::endl;
+        file.close();
     }
     group.barrier_sync();
     group.leave();
