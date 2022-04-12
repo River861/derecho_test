@@ -98,12 +98,12 @@ int main(int argc, char** argv) {
     //     }
     // };
 
-    auto send_one = [&]() {
+    auto send_one = [&](int i) {
         Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
         // Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
         // the lambda function writes the message contents into the provided memory buffer
         // in this case, we do not touch the memory region
-        uint64_t new_value = node_rank * num_messages + i;  // 每次发送不同的值
+        uint64_t new_value = node_rank * 1e5 + i;  // 每次发送不同的值
         derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
 
         // std::string new_value = std::to_string(node_rank);
