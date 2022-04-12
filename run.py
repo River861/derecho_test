@@ -31,13 +31,13 @@ if __name__ == '__main__':
     external_port = conf.getint("DERECHO", "external_port")
 
     cmd_process = {
-        i : CmdProcess("./main "
-                     f"  --DERECHO/local_id={local_id*8+i}"
-                     f"  --DERECHO/gms_port={gms_port+i*10}"
-                     f"  --DERECHO/state_transfer_port={state_transfer_port+i*10}"
-                     f"  --DERECHO/sst_port={sst_port+i*10}"
-                     f"  --DERECHO/rdmc_port={rdmc_port+i*10}"
-                     f"  --DERECHO/external_port={external_port+i*10}")
+        i : CmdProcess(f"taskset -c {i*2} ./main "
+                       f"  --DERECHO/local_id={local_id*8+i}"
+                       f"  --DERECHO/gms_port={gms_port+i*10}"
+                       f"  --DERECHO/state_transfer_port={state_transfer_port+i*10}"
+                       f"  --DERECHO/sst_port={sst_port+i*10}"
+                       f"  --DERECHO/rdmc_port={rdmc_port+i*10}"
+                       f"  --DERECHO/external_port={external_port+i*10}")
         for i in range(8)
     }
     for p in cmd_process.values():  # 并发执行
