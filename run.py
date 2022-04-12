@@ -38,7 +38,7 @@ if __name__ == '__main__':
                        f"  --DERECHO/sst_port={sst_port+i*20}"
                        f"  --DERECHO/rdmc_port={rdmc_port+i*20}"
                        f"  --DERECHO/external_port={external_port+i*20}")
-        for i in range(8)
+        for i in range(4)
     }
     for p in cmd_process.values():  # 并发执行
         p.start()
