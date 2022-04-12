@@ -160,6 +160,7 @@ int main(int argc, char** argv) {
     // // calculate bandwidth measured locally
     // double bw = (total_num_messages + 0.0) / nanoseconds_elapsed * 1e9;
     // aggregate bandwidth from all nodes
+    cout << "FUCK" << endl;
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
     // log the result at the leader node
     if(node_rank == 0) {
