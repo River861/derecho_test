@@ -31,8 +31,8 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 128;        // clients数目
-const int shard_size = 128;         // 也就是replica factor
+const int num_clients = 8;        // clients数目
+const int shard_size = 8;         // 也就是replica factor
 const uint64_t num_messages = 1000;  // 发送消息的数目
 const int msg_size = 1024;
 
