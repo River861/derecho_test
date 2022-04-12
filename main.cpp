@@ -31,9 +31,10 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 128;  // clients数目
-const int shard_size = 128;  // 也就是replica factor
-const uint64_t num_messages = 100;  // 发送消息的数目
+const int num_clients = 128;           // clients数目
+const int shard_size = 128;            // 也就是replica factor
+const uint64_t num_messages = 100000;  // 发送消息的数目
+const int msg_size = 1024;             // msg大小
 
 
 int main(int argc, char** argv) {
@@ -53,27 +54,6 @@ int main(int argc, char** argv) {
     // auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
     auto bar_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Bar>(); };
 
-    // // 1.1 创建callback函数，用于终止testing
-    // // variable 'done' tracks the end of the test
-    // volatile bool done = false;
-    // uint64_t total_num_messages = num_messages * num_clients;  // 消息总数(all sender mode)
-    // // callback into the application code at each message delivery
-    // auto stability_callback = [&done,
-    //                            total_num_messages,
-    //                            num_delivered = 0u](uint32_t subgroup,
-    //                                                uint32_t sender_id,
-    //                                                long long int index,
-    //                                                std::optional<std::pair<uint8_t*, long long int>> data,
-    //                                                persistent::version_t ver) mutable {
-    //     // Count the total number of messages delivered
-    //     ++num_delivered;
-    //     // Check for completion
-    //     cout << "num_delivered: " << num_delivered << endl;
-    //     if(num_delivered == total_num_messages) {
-    //         done = true;
-    //     }
-    // };
-
     derecho::Group<Bar> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
                                           std::vector<derecho::view_upcall_t>{},
                                           bar_factory);
@@ -82,24 +62,7 @@ int main(int argc, char** argv) {
     auto members_order = group.get_members();
     uint32_t node_rank = group.get_my_rank();
 
-    // 2. 创建发送消息的执行函数、验证一致性的验证函数
-    // uint32_t my_id = derecho::getConfUInt32(CONF_DERECHO_LOCAL_ID);
-    // this function sends all the messages
-    // auto send_all = [&]() {
-    //     // Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
-    //     Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
-    //     for(uint i = 0; i < num_messages; ++i) {
-    //         // the lambda function writes the message contents into the provided memory buffer
-    //         // in this case, we do not touch the memory region
-    //         // uint64_t new_value = node_rank * num_messages + i;  // 每次发送不同的值
-    //         // derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-
-    //         std::string new_value = std::to_string(node_rank);
-    //         new_value += std::string(1024 - new_value.size(), 'x');
-    //         derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>(new_value);
-    //     }
-    // };
-
+    // 2. 发送消息的函数
     auto send_one = [&](int i) {
         // Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
         Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
@@ -109,11 +72,11 @@ int main(int argc, char** argv) {
         // derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
 
         std::string new_value = std::to_string(node_rank);
-        new_value += std::string(1024 - new_value.size(), 'x');
+        new_value += std::string(msg_size - new_value.size(), 'x');
         derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>(new_value);
     };
 
-    auto check_consistency = [&]()  {
+    auto clear_bar = [&]()  {
         // Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
         // derecho::rpc::QueryResults<uint64_t> foo_results = foo_rpc_handle.ordered_send<RPC_NAME(read_state)>();
         // std::vector<uint64_t> res;
@@ -141,34 +104,17 @@ int main(int argc, char** argv) {
     do {
         send_one(cnt);
         cnt ++;
-        cout << "cnt: " << cnt << endl;
     } while(cnt < num_messages);
     uint64_t nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
-
-    // // start timer
-    // group.barrier_sync();
-    // auto start_time = std::chrono::steady_clock::now();
-    // // send all messages or skip if not a sender
-    // send_all();
-    // // wait for the test to finish
-    // while(!done) {
-    // }
-    // // end timer
-    // auto end_time = std::chrono::steady_clock::now();
-
-    // // 4. 计算throughput
-    // long long int nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();  // 以纳秒级计算
-    // // calculate bandwidth measured locally
-    // double bw = (total_num_messages + 0.0) / nanoseconds_elapsed * 1e9;
-    // aggregate bandwidth from all nodes
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
+
     // log the result at the leader node
     if(node_rank == 0) {
-        check_consistency();
+        clear_bar();
         std::ofstream file;
         file.open("result.txt");
-        file << "total throughput: " << std::fixed << total_bw << std::endl;
+        file << "total throughput: " << std::fixed << total_bw << endl;
         file.close();
     }
     group.barrier_sync();
