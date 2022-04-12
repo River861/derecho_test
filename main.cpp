@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
         // Count the total number of messages delivered
         ++num_delivered;
         // Check for completion
-        // cout << "num_delivered: " << num_delivered << endl;
+        cout << "num_delivered: " << num_delivered << endl;
         if(num_delivered == total_num_messages) {
             done = true;
         }
