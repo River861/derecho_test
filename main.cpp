@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 
     derecho::Group<Bar> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
                                           std::vector<derecho::view_upcall_t>{},
-                                          bar_factory);
+                                          foo_factory);
 
     cout << "Finished constructing/joining Group" << endl;
     auto members_order = group.get_members();
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
     auto start_time = std::chrono::steady_clock::now();
     uint64_t cnt = 0, nanoseconds_elapsed;
     do {
-        send_one();
+        send_one(cnt);
         cnt += shard_size;
         cout << "num_delivered: " << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
