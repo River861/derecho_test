@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 
     // variable 'done' tracks the end of the test
     volatile bool done = false;
-    int total_num_messages = 100000;
+    int total_num_messages = 2000;
     // callback into the application code at each message delivery
     auto stability_callback = [&done,
                                total_num_messages,
