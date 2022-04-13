@@ -75,10 +75,10 @@ int main(int argc, char** argv) {
         new_value += std::string(msg_size - new_value.size(), 'x');
         derecho::rpc::QueryResults<void> void_future = bar_rpc_handle.ordered_send<RPC_NAME(append)>(new_value);
         derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
-        // for(const node_id_t& node : sent_nodes) {
-        //     cout << node << " ";
-        // }
-        // cout << endl;
+        for(const node_id_t& node : sent_nodes) {
+            cout << node << " ";
+        }
+        cout << endl;
     };
 
     auto clear_bar = [&]()  {
