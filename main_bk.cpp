@@ -35,6 +35,7 @@ const int num_clients = 64;          // clients数目
 const int shard_size = 2;           // 也就是replica factor
 // const double test_time = 10.0;      // 测试时间
 const int msg_size = 1024;
+const int total_msg_num = 10000;
 
 
 int main(int argc, char** argv) {
@@ -51,7 +52,7 @@ int main(int argc, char** argv) {
 
     // variable 'done' tracks the end of the test
     volatile bool done = false;
-    int total_num_messages = 500;
+    int total_num_messages = total_msg_num;
     // callback into the application code at each message delivery
     auto stability_callback = [&done,
                                total_num_messages,
@@ -61,7 +62,6 @@ int main(int argc, char** argv) {
                                                    std::optional<std::pair<uint8_t*, long long int>> data,
                                                    persistent::version_t ver) mutable {
         ++num_delivered;
-        cout << "send_id: " << sender_id << " index: " << index << " num_delivered: " << num_delivered << endl;
         // Check for completion
         if(num_delivered == total_num_messages) {
             done = true;
@@ -133,12 +133,23 @@ int main(int argc, char** argv) {
     while(!done) {
         send_one();
         ++ cnt;
+        cout << cnt << endl;
     }
     auto end_time = std::chrono::steady_clock::now();
     auto nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
 
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
     cout << "Time is up! bw: " << std::fixed << bw << endl;
+
+    double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
+
+    // log the result at the leader node
+    if(node_rank == 0) {
+        std::ofstream file;
+        file.open("result.txt");
+        file << "total throughput: " << std::fixed << total_bw << endl;
+        file.close();
+    }
 
     group.barrier_sync();
     group.leave();
