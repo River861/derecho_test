@@ -132,6 +132,7 @@ int main(int argc, char** argv) {
     while(!done) {
         send_one();
         ++ cnt;
+        //  if(cnt %  10) cout << cnt << endl;
     }
     auto end_time = std::chrono::steady_clock::now();
     auto nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
