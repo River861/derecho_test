@@ -19,8 +19,6 @@ using std::endl;
 int main(int argc, char** argv) {
     derecho::Conf::initialize(argc, argv);
 
-    derecho::UserMessageCallbacks callback_set{};
-
     const int num_nodes_in_test = 3;
     derecho::SubgroupInfo subgroup_info{[](const std::type_index& subgroup_type,
             const std::unique_ptr<derecho::View>& prev_view, derecho::View& curr_view,
@@ -42,7 +40,9 @@ int main(int argc, char** argv) {
 
     auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
 
-    derecho::Group<FooInt> group(callback_set, subgroup_info, {}, std::vector<derecho::view_upcall_t>{}, foo_factory);
+    derecho::Group<FooInt> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
+                                        std::vector<derecho::view_upcall_t>{},
+                                        foo_factory);
 
     cout << "Finished constructing/joining Group" << endl;
 
