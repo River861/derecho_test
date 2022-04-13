@@ -31,8 +31,8 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 3;          // clients数目
-const int shard_size = 3;           // 也就是replica factor
+const int num_clients = 16;          // clients数目
+const int shard_size = 2;           // 也就是replica factor
 const double test_time = 10.0;      // 测试时间
 const int msg_size = 1024;
 
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     //Define subgroup membership using the default subgroup allocator function
     //Each Replicated type will have one subgroup and one shard, with three members in the shard
     derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
-        {std::type_index(typeid(Foo)), derecho::one_subgroup_policy(derecho::fixed_even_shards(1, shard_size))}
+        {std::type_index(typeid(Foo)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))}
         // {std::type_index(typeid(Bar)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))},  // TODO node数量可能要大于replica数量，可能需要改shared数目
     })};
     //Each replicated type needs a factory; this can be used to supply constructor arguments
