@@ -31,7 +31,7 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 24;          // clients数目
+const int num_clients = 8;          // clients数目
 const int shard_size = 2;           // 也就是replica factor
 const double test_time = 10.0;      // 测试时间
 // const int msg_size = 16;
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     do {
         send_one();
         cnt ++;
-        if(cnt % 100 == 0) cout << cnt << endl;
+        // if(cnt % 100 == 0) cout << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     } while(nanoseconds_elapsed < test_time * 1e9);
 
