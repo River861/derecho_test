@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 
     // variable 'done' tracks the end of the test
     volatile bool done = false;
-    int total_num_messages = 2000;
+    int total_num_messages = 500;
     // callback into the application code at each message delivery
     auto stability_callback = [&done,
                                total_num_messages,
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
                                                    std::optional<std::pair<uint8_t*, long long int>> data,
                                                    persistent::version_t ver) mutable {
         ++num_delivered;
-        cout << "num_delivered: " << num_delivered << endl;
+        cout << "send_id: " << send_id << " index: " << index << " num_delivered: " << num_delivered << endl;
         // Check for completion
         if(num_delivered == total_num_messages) {
             done = true;
