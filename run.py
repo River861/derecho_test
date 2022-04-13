@@ -13,8 +13,8 @@ class CmdProcess(Thread):
         self.__result = None
 
     def run(self):
-        p = subprocess.Popen(self.__cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print(p.communicate()[0])
+        p = subprocess.Popen(self.__cmd, shell=True)  #, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        return p.wait()
 
     def get_result(self):
         return self.__result
