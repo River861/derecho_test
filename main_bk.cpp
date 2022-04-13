@@ -140,15 +140,15 @@ int main(int argc, char** argv) {
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
     cout << "Time is up! bw: " << std::fixed << bw << endl;
 
-    double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
+    // double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
-    // log the result at the leader node
-    if(node_rank == 0) {
-        std::ofstream file;
-        file.open("result.txt");
-        file << "total throughput: " << std::fixed << total_bw << endl;
-        file.close();
-    }
+    // // log the result at the leader node
+    // if(node_rank == 0) {
+    //     std::ofstream file;
+    //     file.open("result.txt");
+    //     file << "total throughput: " << std::fixed << total_bw << endl;
+    //     file.close();
+    // }
 
     group.barrier_sync();
     group.leave();
