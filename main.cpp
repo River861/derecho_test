@@ -51,8 +51,8 @@ int main(int argc, char** argv) {
     //Each replicated type needs a factory; this can be used to supply constructor arguments
     //for the subgroup's initial state. These must take a PersistentRegistry* argument, but
     //in this case we ignore it because the replicated objects aren't persistent.
-    // auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
-    auto bar_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Bar>(); };
+    auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
+    // auto bar_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Bar>(); };
 
     derecho::Group<Foo> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
                                           std::vector<derecho::view_upcall_t>{},
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
         // Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
         // the lambda function writes the message contents into the provided memory buffer
         // in this case, we do not touch the memory region
-        uint64_t new_value = node_rank * 1e5 + i;  // 每次发送不同的值
+        uint64_t new_value = node_rank;
         derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
         decltype(results)::ReplyMap& replies = results.get();
         for(auto& reply_pair : replies) {
