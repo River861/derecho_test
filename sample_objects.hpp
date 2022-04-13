@@ -34,12 +34,12 @@ struct Foo : public mutils::ByteRepresentable {
     uint64_t read_state() const {
         return state;
     }
-    void change_state(const uint64_t& new_state) {
-        // if(new_state == state) {
-        //     return false;
-        // }
+    bool change_state(const uint64_t& new_state) {
+        if(new_state == state) {
+            return false;
+        }
         state = new_state;
-        // return true;
+        return true;
     }
 
     /**

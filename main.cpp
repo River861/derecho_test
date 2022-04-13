@@ -31,9 +31,9 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 64;          // clients数目
-const int shard_size = 2;           // 也就是replica factor
-const double test_time = 5.0;      // 测试时间
+const int num_clients = 8;          // clients数目
+const int shard_size = 8;           // 也就是replica factor
+const double test_time = 10.0;      // 测试时间
 // const int msg_size = 16;
 
 
@@ -70,13 +70,11 @@ int main(int argc, char** argv) {
     // 2. 发送消息的函数
     auto send_one = [&]() {
         uint64_t new_value = node_rank;
-        derecho::rpc::QueryResults<void> void_future = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        void_future.get();
-        // derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        // bool results_total = true;
-        // for(auto& reply_pair : results.get()) {
-        //     results_total = results_total && reply_pair.second.get();
-        // }
+        derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
+        bool results_total = true;
+        for(auto& reply_pair : results.get()) {
+            results_total = results_total && reply_pair.second.get();
+        }
 
         // std::string new_value = std::to_string(node_rank);
         // new_value += std::string(msg_size - new_value.size(), 'x');
@@ -95,7 +93,7 @@ int main(int argc, char** argv) {
     do {
         send_one();
         cnt ++;
-        if(cnt % 10) cout << cnt << endl;
+        // if(cnt % 10) cout << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     } while(nanoseconds_elapsed < test_time * 1e9);
 
