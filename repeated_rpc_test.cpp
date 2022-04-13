@@ -19,9 +19,9 @@ using std::endl;
 int main(int argc, char** argv) {
     derecho::Conf::initialize(argc, argv);
 
-    const int num_nodes_in_test = 64;
+    const int num_nodes_in_test = 128;
     const int shard_size = 2;
-    int trials = 50000;
+    int trials = 10000;
     derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
         {std::type_index(typeid(FooInt)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_nodes_in_test / shard_size, shard_size))}
     })};
