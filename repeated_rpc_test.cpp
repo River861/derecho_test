@@ -19,9 +19,10 @@ using std::endl;
 int main(int argc, char** argv) {
     derecho::Conf::initialize(argc, argv);
 
-    const int num_nodes_in_test = 8;
-        derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
-        {std::type_index(typeid(FooInt)), derecho::one_subgroup_policy(derecho::fixed_even_shards(1, num_nodes_in_test))}
+    const int num_nodes_in_test = 12;
+    const int shard_size = 4;
+    derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
+        {std::type_index(typeid(FooInt)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_nodes_in_test / shard_size, shard_size))}
     })};
 
     auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<FooInt>(-1); };
