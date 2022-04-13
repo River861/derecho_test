@@ -23,7 +23,7 @@
 #include <derecho/conf/conf.hpp>
 #include <derecho/core/derecho.hpp>
 #include "sample_objects.hpp"
-#include "aggregate_bandwidth.hpp"
+// #include "aggregate_bandwidth.hpp"
 
 using derecho::ExternalCaller;
 using derecho::Replicated;
@@ -118,15 +118,21 @@ int main(int argc, char** argv) {
     } while(nanoseconds_elapsed < test_time * 1e9);
     cout << "Time is up!" << endl;
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
-    double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
-    // log the result at the leader node
-    if(node_rank == 0) {
-        std::ofstream file;
-        file.open("result.txt");
-        file << "total throughput: " << std::fixed << total_bw << endl;
-        file.close();
-    }
+    std::ofstream file;
+    file.open("bw_" + std::to_string(node_rank) + "_result.txt");
+    file << std::fixed << bw << endl;
+    file.close();
+
+    // double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
+
+    // // log the result at the leader node
+    // if(node_rank == 0) {
+    //     std::ofstream file;
+    //     file.open("result.txt");
+    //     file << "total throughput: " << std::fixed << total_bw << endl;
+    //     file.close();
+    // }
     group.barrier_sync();
     group.leave();
     return 0;
