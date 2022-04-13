@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
         subgroup_allocation[subgroup_type] = std::move(subgroup_vector);
     }};
 
-    auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
+    auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<FooInt>(-1); };
 
     derecho::Group<FooInt> group(derecho::UserMessageCallbacks{}, subgroup_info, {},
                                         std::vector<derecho::view_upcall_t>{},
