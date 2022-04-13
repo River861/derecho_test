@@ -33,7 +33,7 @@ using std::endl;
 
 const int num_clients = 128;          // clients数目
 const int shard_size = 2;           // 也就是replica factor
-const double test_time = 5.0;      // 测试时间
+const double test_time = 10.0;      // 测试时间
 // const int msg_size = 16;
 
 
@@ -71,10 +71,10 @@ int main(int argc, char** argv) {
     auto send_one = [&]() {
         uint64_t new_value = node_rank;
         derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        decltype(results)::ReplyMap& replies = results.get();
-        // for(auto& reply_pair : replies) {
-        //     cout << "Reply from node " << reply_pair.first << " was " << std::boolalpha << reply_pair.second.get() << endl;
-        // }
+        bool results_total = true;
+        for(auto& reply_pair : results.get()) {
+            results_total = results_total && reply_pair.second.get();
+        }
 
         // std::string new_value = std::to_string(node_rank);
         // new_value += std::string(msg_size - new_value.size(), 'x');
