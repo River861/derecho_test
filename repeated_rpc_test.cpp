@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
     const int num_nodes_in_test = 16;
         derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
-        {std::type_index(typeid(FooInt)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_nodes_in_test / 2, 2))}
+        {std::type_index(typeid(FooInt)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_nodes_in_test / 4, 4))}
     })};
 
     auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<FooInt>(-1); };
