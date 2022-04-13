@@ -1,20 +1,24 @@
 from threading import Thread
-import os
 import configparser
+
+import subprocess
+import platform
 
 
 class CmdProcess(Thread):
 
-    def __init__(self, cmd):
+    def __init__(self, cmd: str):
         super().__init__()
         self.__cmd = cmd
         self.__result = None
+        self.__sys = platform.system()
 
     def run(self):
-        self.__result = os.system(self.__cmd)
+        p = subprocess.Popen(self.__cmd, shell=True)
+        return p.wait()
 
     def get_result(self):
-        return self.__result
+        return self.__result if self.__sys == "Windows" else (self.__result >> 8)
 
 
 if __name__ == '__main__':
