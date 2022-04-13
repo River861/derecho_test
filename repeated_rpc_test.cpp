@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 
     auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
 
-    derecho::Group<FooInt> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
+    derecho::Group<FooInt> group(derecho::UserMessageCallbacks{}, subgroup_info, {},
                                         std::vector<derecho::view_upcall_t>{},
                                         foo_factory);
 
