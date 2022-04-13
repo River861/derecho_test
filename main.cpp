@@ -116,6 +116,7 @@ int main(int argc, char** argv) {
         if(cnt % 10) cout << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     } while(nanoseconds_elapsed < test_time * 1e9);
+    cout << "Time is up!" << endl;
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
