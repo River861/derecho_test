@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     cout << "Finished constructing/joining Group" << endl;
 
     Replicated<FooInt>& foo_rpc_handle = group.get_subgroup<FooInt>();
-    int trials = 1000;
+    int trials = 100000;
     cout << "Changing Foo's state " << trials << " times" << endl;
     for(int count = 0; count < trials; ++count) {
         cout << "Sending query #" << count << std::endl;
@@ -47,5 +47,6 @@ int main(int argc, char** argv) {
 
     cout << "Reached end of main()" << endl;
     group.barrier_sync();
+    group.leave();
     return 0;
 }
