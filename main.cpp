@@ -119,10 +119,10 @@ int main(int argc, char** argv) {
     cout << "Time is up!" << endl;
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
 
-    std::ofstream file;
-    file.open("bw_" + std::to_string(node_rank) + "_result.txt");
-    file << std::fixed << bw << endl;
-    file.close();
+    // std::ofstream file;
+    // file.open("bw_" + std::to_string(node_rank) + "_result.txt");
+    // file << std::fixed << bw << endl;
+    // file.close();
 
     // double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
