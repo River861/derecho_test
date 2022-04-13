@@ -112,6 +112,7 @@ int main(int argc, char** argv) {
     uint64_t cnt = 0, nanoseconds_elapsed;
     do {
         send_one();
+        sleep(1000);
         cnt ++;
         if(cnt % 10) cout << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
