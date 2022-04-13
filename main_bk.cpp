@@ -135,13 +135,13 @@ int main(int argc, char** argv) {
     while(!done) {
         send_one();
         ++ cnt;
-        if(cnt % 10 == 0) cout << cnt << endl;
+        if(cnt % 100 == 0) cout << cnt << endl;
     }
     auto end_time = std::chrono::steady_clock::now();
     auto nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
 
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
-    cout << "Time is up! bw: " << std::fixed << bw << endl;
+    cout << "Num is up! bw: " << std::fixed << bw << endl;
 
     double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
