@@ -23,7 +23,7 @@
 #include <derecho/conf/conf.hpp>
 #include <derecho/core/derecho.hpp>
 #include "sample_objects.hpp"
-// #include "aggregate_bandwidth.hpp"
+#include "aggregate_bandwidth.hpp"
 
 using derecho::ExternalCaller;
 using derecho::Replicated;
@@ -34,7 +34,7 @@ using std::endl;
 const int num_clients = 8;          // clients数目
 const int shard_size = 8;           // 也就是replica factor
 const double test_time = 10.0;      // 测试时间
-// const int msg_size = 1024;
+const int msg_size = 1024;
 
 
 int main(int argc, char** argv) {
