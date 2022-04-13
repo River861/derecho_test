@@ -31,8 +31,8 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 16;          // clients数目
-const int shard_size = 2;           // 也就是replica factor
+const int num_clients = 8;          // clients数目
+const int shard_size = 8;           // 也就是replica factor
 // const double test_time = 10.0;      // 测试时间
 const int msg_size = 16;
 const int total_msg_num = 1000;
@@ -46,8 +46,8 @@ int main(int argc, char** argv) {
     //Define subgroup membership using the default subgroup allocator function
     //Each Replicated type will have one subgroup and one shard, with three members in the shard
     derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
-        // {std::type_index(typeid(Foo)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))}
-        {std::type_index(typeid(Bar)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))},
+        {std::type_index(typeid(Foo)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))}
+        // {std::type_index(typeid(Bar)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))},
     })};
 
     // variable 'done' tracks the end of the test
@@ -71,35 +71,34 @@ int main(int argc, char** argv) {
     //Each replicated type needs a factory; this can be used to supply constructor arguments
     //for the subgroup's initial state. These must take a PersistentRegistry* argument, but
     //in this case we ignore it because the replicated objects aren't persistent.
-    // auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
-    // derecho::Group<Foo> group(derecho::UserMessageCallbacks{stability_callback}, subgroup_function, {},
-    //                                     std::vector<derecho::view_upcall_t>{},
-    //                                     foo_factory);
-    
-    auto bar_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Bar>(); };
-    derecho::Group<Bar> group(derecho::UserMessageCallbacks{stability_callback}, subgroup_function, {},
+    auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
+    derecho::Group<Foo> group(derecho::UserMessageCallbacks{stability_callback}, subgroup_function, {},
                                         std::vector<derecho::view_upcall_t>{},
-                                        bar_factory);
+                                        foo_factory);
+    
+    // auto bar_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Bar>(); };
+    // derecho::Group<Bar> group(derecho::UserMessageCallbacks{stability_callback}, subgroup_function, {},
+    //                                     std::vector<derecho::view_upcall_t>{},
+    //                                     bar_factory);
 
     cout << "Finished constructing/joining Group" << endl;
     auto members_order = group.get_members();
     uint32_t node_rank = group.get_my_rank();
-    // Replicated<Foo>& rpc_handle = group.get_subgroup<Foo>();
-    Replicated<Bar>& rpc_handle = group.get_subgroup<Bar>();
+    Replicated<Foo>& rpc_handle = group.get_subgroup<Foo>();
 
     // 2. 发送消息的函数
     auto send_one = [&]() {
-        // uint64_t new_value = node_rank;
-        // derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        // decltype(results)::ReplyMap& replies = results.get();
+        uint64_t new_value = node_rank;
+        derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
+        decltype(results)::ReplyMap& replies = results.get();
         // for(auto& reply_pair : replies) {
         //     cout << "Reply from node " << reply_pair.first << " was " << std::boolalpha << reply_pair.second.get() << endl;
         // }
 
-        std::string new_value = std::to_string(node_rank);
-        new_value += std::string(msg_size - new_value.size(), 'x');
-        derecho::rpc::QueryResults<void> void_future = rpc_handle.ordered_send<RPC_NAME(append)>(new_value);
-        derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
+        // std::string new_value = std::to_string(node_rank);
+        // new_value += std::string(msg_size - new_value.size(), 'x');
+        // derecho::rpc::QueryResults<void> void_future = rpc_handle.ordered_send<RPC_NAME(append)>(new_value);
+        // derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
         // for(const node_id_t& node : sent_nodes) {
         //     cout << node << " ";
         // }
