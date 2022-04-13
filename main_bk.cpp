@@ -34,7 +34,7 @@ using std::endl;
 const int num_clients = 16;          // clients数目
 const int shard_size = 2;           // 也就是replica factor
 // const double test_time = 10.0;      // 测试时间
-const int msg_size = 1024;
+const int msg_size = 16;
 const int total_msg_num = 1000;
 
 
