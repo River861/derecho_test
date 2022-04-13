@@ -70,10 +70,10 @@ int main(int argc, char** argv) {
         Replicated<Foo>& foo_rpc_handle = group.get_subgroup<Foo>();
         uint64_t new_value = node_rank;
         derecho::rpc::QueryResults<bool> results = foo_rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        decltype(results)::ReplyMap& replies = results.get();
-        for(auto& reply_pair : replies) {
-            cout << "Reply from node " << reply_pair.first << " was " << std::boolalpha << reply_pair.second.get() << endl;
-        }
+        // decltype(results)::ReplyMap& replies = results.get();
+        // for(auto& reply_pair : replies) {
+        //     cout << "Reply from node " << reply_pair.first << " was " << std::boolalpha << reply_pair.second.get() << endl;
+        // }
 
         // Replicated<Bar>& bar_rpc_handle = group.get_subgroup<Bar>();
         // std::string new_value = std::to_string(node_rank);
