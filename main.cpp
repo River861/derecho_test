@@ -94,12 +94,12 @@ int main(int argc, char** argv) {
     do {
         send_one();
         cnt ++;
-        if(cnt % 10) cout << cnt << endl;
+        if(cnt % 100) cout << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     } while(nanoseconds_elapsed < test_time * 1e9);
 
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
-
+    cout <<  "Time is up! bw: " << bw << endl;
     // std::ofstream file;
     // file.open("bw_" + std::to_string(node_rank) + "_result.txt");
     // file << std::fixed << bw << endl;
