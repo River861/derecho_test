@@ -23,7 +23,7 @@
 #include <derecho/conf/conf.hpp>
 #include <derecho/core/derecho.hpp>
 #include "sample_objects.hpp"
-// #include "aggregate_bandwidth.hpp"
+#include "aggregate_bandwidth.hpp"
 
 using derecho::ExternalCaller;
 using derecho::Replicated;
