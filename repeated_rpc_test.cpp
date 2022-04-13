@@ -21,6 +21,7 @@ int main(int argc, char** argv) {
 
     const int num_nodes_in_test = 8;
     const int shard_size = 8;
+    int trials = 200000;
     derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
         {std::type_index(typeid(FooInt)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_nodes_in_test / shard_size, shard_size))}
     })};
@@ -34,7 +35,6 @@ int main(int argc, char** argv) {
     cout << "Finished constructing/joining Group" << endl;
 
     Replicated<FooInt>& foo_rpc_handle = group.get_subgroup<FooInt>();
-    int trials = 10000;
     cout << "Changing Foo's state " << trials << " times" << endl;
     for(int count = 0; count < trials; ++count) {
         cout << "Sending query #" << count << std::endl;
