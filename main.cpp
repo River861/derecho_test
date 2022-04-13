@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
                                                    std::optional<std::pair<uint8_t*, long long int>> data,
                                                    persistent::version_t ver) mutable {
         ++num_delivered;
+        cout << "num_delivered: " << num_delivered << endl;
         // Check for completion
         if(num_delivered == total_num_messages) {
             done = true;
