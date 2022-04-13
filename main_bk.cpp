@@ -35,7 +35,7 @@ const int num_clients = 10;          // clients数目
 const int shard_size = 10;           // 也就是replica factor
 // const double test_time = 10.0;      // 测试时间
 // const int msg_size = 16;
-const int total_msg_num = 1000;
+const int total_msg_num = 10000;
 
 
 int main(int argc, char** argv) {
