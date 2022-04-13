@@ -70,15 +70,15 @@ int main(int argc, char** argv) {
     // 2. 发送消息的函数
     auto send_one = [&]() {
         uint64_t new_value = node_rank;
-        derecho::rpc::QueryResults<void> void_future = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
-        for(const node_id_t& node : sent_nodes);
+        // derecho::rpc::QueryResults<void> void_future = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
+        // derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
+        // for(const node_id_t& node : sent_nodes);
 
-        // derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        // bool results_total = true;
-        // for(auto& reply_pair : results.get()) {
-        //     results_total = results_total && reply_pair.second.get();
-        // }
+        derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
+        bool results_total = true;
+        for(auto& reply_pair : results.get()) {
+            results_total = results_total && reply_pair.second.get();
+        }
 
         // std::string new_value = std::to_string(node_rank);
         // new_value += std::string(msg_size - new_value.size(), 'x');
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     do {
         send_one();
         cnt ++;
-        if(cnt % 100 == 0) cout << cnt << endl;
+        // if(cnt % 100 == 0) cout << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     } while(nanoseconds_elapsed < test_time * 1e9);
 
