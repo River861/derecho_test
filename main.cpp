@@ -70,7 +70,10 @@ int main(int argc, char** argv) {
     // 2. 发送消息的函数
     auto send_one = [&]() {
         uint64_t new_value = node_rank;
-        rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
+        derecho::rpc::QueryResults<void> void_future rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
+        derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
+        for(const node_id_t& node : sent_nodes);
+
         // derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
         // bool results_total = true;
         // for(auto& reply_pair : results.get()) {
