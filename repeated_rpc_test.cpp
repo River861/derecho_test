@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include <derecho/core/derecho.hpp>
-#include "ample_objects.hpp"
+#include "sample_objects.hpp"
 #include <derecho/conf/conf.hpp>
 
 using derecho::ExternalCaller;
