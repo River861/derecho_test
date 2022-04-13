@@ -53,6 +53,32 @@ struct Foo : public mutils::ByteRepresentable {
     REGISTER_RPC_FUNCTIONS(Foo, P2P_TARGETS(read_state), ORDERED_TARGETS(read_state, change_state))
 };
 
+struct FooInt: mutils::ByteRepresentable {
+
+    int state;
+
+    int read_state() const {
+        return state;
+    }
+    bool change_state(int new_state) {
+        if(new_state == state) {
+            return false;
+        }
+        state = new_state;
+        return true;
+    }
+
+    REGISTER_RPC_FUNCTIONS(FooInt, P2P_TARGETS(read_state), ORDERED_TARGETS(read_state, change_state));
+    /**
+     * Constructs a FooInt with an initial value.
+     * @param initial_state
+     */
+    FooInt(int initial_state = 0) : state(initial_state) {}
+    FooInt() = default;
+    FooInt(const FooInt&) = default;
+    DEFAULT_SERIALIZATION_SUPPORT(FooInt, state);
+};
+
 /**
  * Another example replicated object, where the serializable state is not a POD.
  */
