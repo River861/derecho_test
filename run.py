@@ -11,14 +11,13 @@ class CmdProcess(Thread):
         super().__init__()
         self.__cmd = cmd
         self.__result = None
-        self.__sys = platform.system()
 
     def run(self):
-        p = subprocess.Popen(self.__cmd, shell=True)
-        return p.wait()
+        p = subprocess.Popen(self.__cmd, shell=True, stdout=subprocess.PIPE)
+        self.__result = p.communicate(input=None)
 
     def get_result(self):
-        return self.__result if self.__sys == "Windows" else (self.__result >> 8)
+        return self.__result
 
 
 if __name__ == '__main__':
