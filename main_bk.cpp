@@ -91,9 +91,9 @@ int main(int argc, char** argv) {
         uint64_t new_value = node_rank;
         derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
         decltype(results)::ReplyMap& replies = results.get();
-        // for(auto& reply_pair : replies) {
-        //     cout << "Reply from node " << reply_pair.first << " was " << std::boolalpha << reply_pair.second.get() << endl;
-        // }
+        for(auto& reply_pair : replies) {
+            cout << "Reply from node " << reply_pair.first << " was " << std::boolalpha << reply_pair.second.get() << endl;
+        }
 
         // std::string new_value = std::to_string(node_rank);
         // new_value += std::string(msg_size - new_value.size(), 'x');
@@ -140,15 +140,15 @@ int main(int argc, char** argv) {
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
     cout << "Time is up! bw: " << std::fixed << bw << endl;
 
-    // double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
+    double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
-    // // log the result at the leader node
-    // if(node_rank == 0) {
-    //     std::ofstream file;
-    //     file.open("result.txt");
-    //     file << "total throughput: " << std::fixed << total_bw << endl;
-    //     file.close();
-    // }
+    // log the result at the leader node
+    if(node_rank == 0) {
+        std::ofstream file;
+        file.open("result.txt");
+        file << "total throughput: " << std::fixed << total_bw << endl;
+        file.close();
+    }
 
     group.barrier_sync();
     group.leave();
