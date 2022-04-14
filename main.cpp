@@ -45,15 +45,15 @@ int main(int argc, char** argv) {
     //Define subgroup membership using the default subgroup allocator function
     //Each Replicated type will have one subgroup and one shard, with three members in the shard
     derecho::SubgroupInfo subgroup_function {derecho::DefaultSubgroupAllocator({
-        {std::type_index(typeid(FooInt)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))}
+        {std::type_index(typeid(Foo)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))}
         // {std::type_index(typeid(Bar)), derecho::one_subgroup_policy(derecho::fixed_even_shards(num_clients / shard_size, shard_size))},  // TODO node数量可能要大于replica数量，可能需要改shared数目
     })};
 
     //Each replicated type needs a factory; this can be used to supply constructor arguments
     //for the subgroup's initial state. These must take a PersistentRegistry* argument, but
     //in this case we ignore it because the replicated objects aren't persistent.
-    auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<FooInt>(-1); };
-    derecho::Group<FooInt> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
+    auto foo_factory = [](persistent::PersistentRegistry*,derecho::subgroup_id_t) { return std::make_unique<Foo>(-1); };
+    derecho::Group<Foo> group(derecho::UserMessageCallbacks{}, subgroup_function, {},
                                         std::vector<derecho::view_upcall_t>{},
                                         foo_factory);
     
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     cout << "Finished constructing/joining Group" << endl;
     auto members_order = group.get_members();
     uint32_t node_rank = group.get_my_rank();
-    Replicated<FooInt>& rpc_handle = group.get_subgroup<FooInt>();
+    Replicated<Foo>& rpc_handle = group.get_subgroup<Foo>();
 
     // 2. 发送消息的函数
     auto send_one = [&]() {
