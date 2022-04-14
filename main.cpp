@@ -96,8 +96,8 @@ int main(int argc, char** argv) {
     auto start_time = std::chrono::steady_clock::now();
     uint64_t cnt = 0, nanoseconds_elapsed;
     do {
-        send_one();
         cnt ++;
+        send_one();
         if(cnt % 100 == 0) cout << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     } while(nanoseconds_elapsed < test_time * 1e9);
