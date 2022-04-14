@@ -93,10 +93,10 @@ int main(int argc, char** argv) {
         // derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
         // for(const node_id_t& node : sent_nodes);
         derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        // bool results_total = true;
-        // for(auto& reply_pair : results.get()) {
-        //     results_total = results_total && reply_pair.second.get();
-        // }
+        bool results_total = true;
+        for(auto& reply_pair : results.get()) {
+            results_total = results_total && reply_pair.second.get();
+        }
 
         // std::string new_value = std::to_string(node_rank);
         // new_value += std::string(msg_size - new_value.size(), 'x');
@@ -143,15 +143,20 @@ int main(int argc, char** argv) {
     double bw = (cnt + 0.0) / nanoseconds_elapsed *1e9;
     cout << "Num is up! bw: " << std::fixed << bw << endl;
 
-    double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
+    std::ofstream file;
+    file.open("results/bw_" + std::to_string(node_rank) + ".txt");
+    file << std::fixed << bw << endl;
+    file.close();
 
-    // log the result at the leader node
-    if(node_rank == 0) {
-        std::ofstream file;
-        file.open("result.txt");
-        file << "total throughput: " << std::fixed << total_bw << endl;
-        file.close();
-    }
+    // double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
+
+    // // log the result at the leader node
+    // if(node_rank == 0) {
+    //     std::ofstream file;
+    //     file.open("result.txt");
+    //     file << "total throughput: " << std::fixed << total_bw << endl;
+    //     file.close();
+    // }
 
     group.barrier_sync();
     group.leave();
@@ -165,11 +170,6 @@ int main(int argc, char** argv) {
     //     if(cnt % 10) cout << cnt << endl;
     //     nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     // } while(nanoseconds_elapsed < test_time * 1e9);
-
-    // std::ofstream file;
-    // file.open("bw_" + std::to_string(node_rank) + "_result.txt");
-    // file << std::fixed << bw << endl;
-    // file.close();
 
     // double total_bw = aggregate_bandwidth(members_order, members_order[node_rank], bw);
 
