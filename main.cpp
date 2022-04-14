@@ -74,12 +74,11 @@ int main(int argc, char** argv) {
         // derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
         // for(const node_id_t& node : sent_nodes);
 
-        rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        // derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        // bool results_total = true;
-        // for(auto& reply_pair : results.get()) {
-        //     results_total = results_total && reply_pair.second.get();
-        // }
+        derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
+        bool results_total = true;
+        for(auto& reply_pair : results.get()) {
+            results_total = results_total && reply_pair.second.get();
+        }
 
         // std::string new_value = std::to_string(node_rank);
         // new_value += std::string(msg_size - new_value.size(), 'x');
