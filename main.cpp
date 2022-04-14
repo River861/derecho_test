@@ -75,10 +75,10 @@ int main(int argc, char** argv) {
         // for(const node_id_t& node : sent_nodes);
 
         derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        bool results_total = true;
-        for(auto& reply_pair : results.get()) {
-            results_total = results_total && reply_pair.second.get();
-        }
+        // bool results_total = true;
+        // for(auto& reply_pair : results.get()) {
+        //     results_total = results_total && reply_pair.second.get();
+        // }
 
         // std::string new_value = std::to_string(node_rank);
         // new_value += std::string(msg_size - new_value.size(), 'x');
