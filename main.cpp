@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     cout << "Finished constructing/joining Group" << endl;
     auto members_order = group.get_members();
     uint32_t node_rank = group.get_my_rank();
-    Replicated<Foo>& rpc_handle = group.get_subgroup<Foo>();
+    Replicated<FooInt>& rpc_handle = group.get_subgroup<FooInt>();
 
     // 2. 发送消息的函数
     auto send_one = [&]() {
