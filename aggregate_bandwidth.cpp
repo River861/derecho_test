@@ -7,8 +7,8 @@ double aggregate_bandwidth(std::vector<uint32_t> members, uint32_t node_id,
     OneResultSST sst(sst::SSTParams(members, node_id));
     sst.bw[sst.get_local_index()] = bw;
     sst.put();
-    std::cout << "node: " << sst.get_local_index() << " bw: " << bw << std::endl;
     sst.sync_with_members();
+    std::cout << "node: " << sst.get_local_index() << " bw: " << bw << std::endl;
     double total_bw = 0.0;
     unsigned int num_nodes = members.size();
     for(unsigned int i = 0; i < num_nodes; ++i) {
