@@ -33,7 +33,7 @@ if __name__ == '__main__':
     rdmc_port = conf.getint("DERECHO", "rdmc_port")
     external_port = conf.getint("DERECHO", "external_port")
 
-    clients_num = 4
+    clients_num = 8
     cmd_process = {
         i : CmdProcess(f"taskset -c {i*2} ./main "
                        f"  --DERECHO/local_id={local_id*clients_num+i}"
