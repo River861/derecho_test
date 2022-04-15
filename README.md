@@ -1,4 +1,4 @@
-## Derecho_test
+# Derecho_test
 
 这是一个简单地使用[Derecho](https://github.com/Derecho-Project/derecho)进行吞吐量测试的实验，用于验证共识协议对吞吐量的影响。
 
