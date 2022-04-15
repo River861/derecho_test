@@ -61,14 +61,12 @@ make bk：运行10000条消息来测试吞吐量
 make test：debug
 ```
 
-* 执行
-所有结点执行
+* 执行（所有结点执行）
 ```shell
 run.py
 ```
 
-* 结果
-所有节点执行
+* 结果（所有节点执行）
 ```shell
 python3 get_sum.py
 ```
