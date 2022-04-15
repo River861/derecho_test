@@ -5,6 +5,7 @@
 
 ## Environment
 支持**RoCE**网卡的机器若干。
+首先先按照[Derecho](https://github.com/Derecho-Project/derecho)的要求配置每台机器的环境。
 
 每台机器：
 * 安装Derecho
