@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     do {
         cnt ++;
         send_one();
-        if(cnt % 100 == 0) cout << cnt << endl;
+        // if(cnt % 100 == 0) cout << cnt << endl;
         nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
     } while(nanoseconds_elapsed < test_time * 1e9);
 
