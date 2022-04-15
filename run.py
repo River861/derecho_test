@@ -1,5 +1,6 @@
 from threading import Thread
 from pathlib import Path
+import shutil
 import configparser
 
 import subprocess
@@ -37,7 +38,10 @@ if __name__ == '__main__':
     external_port = conf.getint("DERECHO", "external_port")
 
     # 创建results文件夹
-    Path("./results").mkdir(parents=True, exist_ok=True)
+    output_path = Path("./results")
+    if output_path.exists():
+        shutil.rmtree(output_path)
+    output_path.mkdir(parents=True, exist_ok=True)
 
     cmd_process = {
         i : CmdProcess(f"taskset -c {i*2} ./main "
