@@ -1,8 +1,8 @@
 from threading import Thread
+from pathlib import Path
 import configparser
 
 import subprocess
-import platform
 
 
 clients_num = 8
@@ -35,6 +35,9 @@ if __name__ == '__main__':
     sst_port = conf.getint("DERECHO", "sst_port")
     rdmc_port = conf.getint("DERECHO", "rdmc_port")
     external_port = conf.getint("DERECHO", "external_port")
+
+    # 创建results文件夹
+    Path("./results").mkdir(parents=True, exist_ok=True)
 
     cmd_process = {
         i : CmdProcess(f"taskset -c {i*2} ./main "
