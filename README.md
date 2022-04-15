@@ -66,7 +66,7 @@ make test：debug
 run.py
 ```
 
-* 结果（所有节点执行）
+* 结果（所有结点执行）
 ```shell
 python3 get_sum.py
 ```
