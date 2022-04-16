@@ -6,7 +6,7 @@ import configparser
 import subprocess
 
 
-clients_num = 10
+clients_num = 8
 
 
 class CmdProcess(Thread):
