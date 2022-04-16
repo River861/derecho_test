@@ -31,8 +31,8 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 88;          // clients数目
-const int shard_size = 88;           // 也就是replica factor
+const int num_clients = 80;          // clients数目
+const int shard_size = 80;           // 也就是replica factor
 const double test_time = 10.0;      // 测试时间
 // const int msg_size = 16;
 
