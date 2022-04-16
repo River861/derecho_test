@@ -31,8 +31,8 @@ using std::cout;
 using std::endl;
 
 
-const int num_clients = 24;          // clients数目
-const int shard_size = 24;           // 也就是replica factor
+const int num_clients = 64;          // clients数目
+const int shard_size = 64;           // 也就是replica factor
 // const double test_time = 10.0;      // 测试时间
 // const int msg_size = 16;
 const int total_msg_num = 10000;
@@ -93,10 +93,10 @@ int main(int argc, char** argv) {
         // derecho::rpc::QueryResults<void>::ReplyMap& sent_nodes = void_future.get();
         // for(const node_id_t& node : sent_nodes);
         derecho::rpc::QueryResults<bool> results = rpc_handle.ordered_send<RPC_NAME(change_state)>(new_value);
-        bool results_total = true;
-        for(auto& reply_pair : results.get()) {
-            results_total = results_total && reply_pair.second.get();
-        }
+        // bool results_total = true;
+        // for(auto& reply_pair : results.get()) {
+        //     results_total = results_total && reply_pair.second.get();
+        // }
 
         // std::string new_value = std::to_string(node_rank);
         // new_value += std::string(msg_size - new_value.size(), 'x');
@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
     while(!done) {
         send_one();
         ++ cnt;
-        if(cnt % 100 == 0) cout << cnt << endl;
+        //  if(cnt % 100 == 0) cout << cnt << endl;
     }
     auto end_time = std::chrono::steady_clock::now();
     auto nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
